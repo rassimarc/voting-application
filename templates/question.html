@@ -4,13 +4,13 @@
 <title>Question</title>
 </head>
 <body>
-<form method="post">
-  <h1>{{ question }}</h1>
+  <form action="/vote" method="POST">
+    <h1>{{ Question }}</h1>
   <ul>
-    <li><input type="radio" name="answer" value="answer1">{{ answer1 }}</li>
-    <li><input type="radio" name="answer" value="answer2">{{ answer2 }}</li>
-    <li><input type="radio" name="answer" value="answer3">{{ answer3 }}</li>
-    <li><input type="radio" name="answer" value="answer4">{{ answer4 }}</li>
+    <li><input type="radio" name="answer" value="1">{{ x[0] }}</li>
+    <li><input type="radio" name="answer" value="2">{{ x[1] }}</li>
+    <li><input type="radio" name="answer" value="3">{{ x[2] }}</li>
+    <li><input type="radio" name="answer" value="4">{{ x[3] }}</li>
   </ul>
   <input type="submit" value="Submit">
 </form>

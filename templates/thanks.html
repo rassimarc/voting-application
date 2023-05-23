@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Thanks</title>
+<title>Question</title>
 </head>
 <body>
-<h1>Thank you for voting answer {{ answer }}</h1>
+<form method="post">
+  <h1>{{ question }}</h1>
+  <ul>
+    <li>{{ options[0] }}: {{ votes[0] }}</li>
+    <li>{{ options[1] }}: {{ votes[1] }}</li>
+    <li>{{ options[2] }}: {{ votes[2] }}</li>
+    <li>{{ options[3] }}: {{ votes[3] }}</li>
+  </ul>
+</form>
 </body>
 </html>
