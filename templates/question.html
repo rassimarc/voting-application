@@ -2,40 +2,131 @@
 <html>
 <head>
 <title>Question</title>
+<style>
+  @import url(http://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+
+  body {
+    font-family: 'Droid Arabic Kufi', sans-serif;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    display: inline-block;
+    text-align: left;
+  }
+
+  li {
+    margin-bottom: 10px;
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  .radio-label {
+    display: inline-block;
+    padding: 10px 20px;
+    width: 200px;
+    background-color: #fff;
+    color: #333;
+    border: 2px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .radio-label:hover {
+    background-color: #eee;
+  }
+
+  input[type="radio"]:checked + .radio-label {
+    background-color: #4CAF50;
+    color: #fff;
+    border-color: #4CAF50;
+  }
+
+  #myBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  #myBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  #demo {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .expired {
+    color: red;
+  }
+</style>
 </head>
 <body>
   <p id="demo"></p>
   <form action="/vote" method="POST">
     <h1>{{ Question }}</h1>
-  <ul>
-    <li><input type="radio" name="answer" value="1">{{ x[0] }}</li>
-    <li><input type="radio" name="answer" value="2">{{ x[1] }}</li>
-    <li><input type="radio" name="answer" value="3">{{ x[2] }}</li>
-    <li><input type="radio" name="answer" value="4">{{ x[3] }}</li>
-  </ul>
-  <input type="submit" id = "myBtn" value="Submit">
-</form>
+    <ul>
+      <li>
+        <input type="radio" id="option1" name="answer" value="1">
+        <label class="radio-label" for="option1">{{ x[0] }}</label>
+      </li>
+      <li>
+        <input type="radio" id="option2" name="answer" value="2">
+        <label class="radio-label" for="option2">{{ x[1] }}</label>
+      </li>
+      <li>
+        <input type="radio" id="option3" name="answer" value="3">
+        <label class="radio-label" for="option3">{{ x[2] }}</label>
+      </li>
+      <li>
+        <input type="radio" id="option4" name="answer" value="4">
+        <label class="radio-label" for="option4">{{ x[3] }}</label>
+      </li>
+    </ul>
+    <br>
+    <input type="submit" id="myBtn" value="Submit">
+  </form>
 
 
-<script>
-  // Set the date we're counting down to
-  var timer = "{{ timer }}";
-  
-  var time_int = parseInt(timer) + 60;
-  // Update the count down every 1 second
-  var x = setInterval(function() {
+  <script>
+    // Set the date we're counting down to
+    document.getElementById("myBtn").disabled = true;
+    var timer = "{{ timer }}";
 
-    time_int--;
-    // Output the result in an element with id="demo"
-    document.getElementById("demo").innerHTML = time_int + "s ";
-      
-    // If the count down is over, write some text 
-    if (time_int < 0) {
-      clearInterval(x);
-      document.getElementById("demo").innerHTML = "EXPIRED";
-      document.getElementById("myBtn").disabled = true;
-    }
-  }, 1000);
-</script>
+    var time_int = parseInt(timer) + 60;
+    // Update the count down every 1 second
+    var x = setInterval(function() {
+      document.getElementById("myBtn").disabled = false;
+
+      time_int--;
+      // Output the result in an element with id="demo"
+      document.getElementById("demo").innerHTML = time_int + "s ";
+
+      // If the count down is over, write some text 
+      if (time_int < 0) {
+        clearInterval(x);
+        document.getElementById("demo").innerHTML = "EXPIRED";
+        document.getElementById("myBtn").disabled = true;
+        document.getElementById("demo").classList.add("expired");
+      }
+    }, 1000);
+  </script>
 </body>
 </html>

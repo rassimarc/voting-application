@@ -2,8 +2,10 @@ from flask import Flask, render_template, request, Response, make_response
 import datetime
 import pandas as pd
 import time
+import sqlite3
 
 app = Flask(__name__)
+conn = sqlite3.connect('voting-v0.1.db')
 session = {}
 Questions = {}
 Answers = {}
@@ -35,10 +37,28 @@ Questions, Answers = csv_open()
 
 @app.route('/')
 def index():
-    session["isOpen"] = True
     global _time
     _time = time.time()
-    return "Hello"
+    return render_template("index.html")
+
+@app.route("/admin", methods = ['GET', 'POST'])
+def question_options():
+    if request.method == "GET":
+        return render_template("settings.html", QuestionNumber = list(Questions.keys()), Questions = Questions)
+    else:
+        availability = request.form.get("mode")
+        selected = request.form.get("selected")
+        if selected:
+            session["activeQuestion"] = int(selected)
+        if availability == "Show":
+            global _time
+            _time = time.time()
+            session["isOpen"] = True
+        elif availability == "Hide":
+            session["isOpen"] = False
+        return render_template("settings.html", QuestionNumber = list(Questions.keys()), Questions = Questions)
+
+
 
 @app.route('/question')
 def questions():
@@ -48,11 +68,11 @@ def questions():
     if not activeAnswers or not activeQuestion :
         return "There are no questions"
     isOpen = session["isOpen"]
+    if not isOpen:
+        return "Stay Tuned!"
     if f'voted{activeID}' in request.cookies:
-        return render_template("voted.html", Question = activeQuestion, x = activeAnswers)
-    if isOpen: 
-        return render_template("question.html", Question = activeQuestion, x = activeAnswers, timer = _time-time.time())
-    else: return "Stay Tuned!"
+        return render_template("voted.html", Question = activeQuestion, x = activeAnswers) 
+    return render_template("question.html", Question = activeQuestion, x = activeAnswers, timer = _time-time.time())
 
 @app.route('/vote', methods = ["POST"])
 def vote():

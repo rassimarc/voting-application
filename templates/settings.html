@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Settings</title>
+    </head>
+    <body>
+        <h2>Choose Question</h2>
+        <form method="POST" action="/admin">
+            <select name="selected">
+                {% for number in QuestionNumber %}
+                <option value="{{ number }}">{{ Questions[number] }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <h2>Show Question?</h2>
+            <input type="submit" name = "mode" value="Show">
+            <input type="submit" name = "mode" value="Hide">
+        </form>
+    </body>
+</html>
