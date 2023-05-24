@@ -6,6 +6,8 @@ import sqlite3
 
 app = Flask(__name__)
 conn = sqlite3.connect('voting-v0.1.db')
+cur = conn.cursor()
+
 session = {}
 Questions = {}
 Answers = {}
@@ -27,13 +29,27 @@ def csv_open():
         # Access the data in each row and column
         for i in range(num_rows):
             Q[i+1] = data.iloc[i, 0]
+            try:
+                cur.execute(f"INSERT INTO Question VALUES ({i+1}, '{Q[i+1]}', 0, 'marc' )")
+                conn.commit()
+            except Exception as exp:
+                print("Could not insert question:", exp)
             A[i+1] = data.iloc[i, 1:len(data.iloc[i, :])].to_list()
+            for j in range(len(A[i+1])):
+                try:
+                    cur.execute(f"INSERT INTO Option(op_id, op_content, op_votes, q_id) VALUES ({j+1}, '{A[i+1][j]}', 0, {i+1} )")
+                    conn.commit()
+                except Exception as exp:
+                    print("Could not insert option:", exp)
+
     except Exception as exp:
-        print("Failed to read the question file", exp)
+        print("Failed to read the question file:", exp)
 
     return Q, A
 
 Questions, Answers = csv_open()
+conn.commit()
+conn.close()
 
 @app.route('/')
 def index():
@@ -98,6 +114,14 @@ def vote():
 
     try:
         session[option] += 1
+        try:
+            conn = sqlite3.connect('voting-v0.1.db')
+            cursor = conn.cursor()
+            cursor.execute(f"UPDATE Option SET op_votes = op_votes + 1 WHERE q_id = {activeID} AND op_id = {option}")
+            conn.commit()
+            conn.close()
+        except Exception as exp:
+            print("Could not increment vote:", exp)
         response = make_response(render_template("thanks.html",  question = activeQuestion, options = activeAnswers, votes = [session["1"], session["2"], session["3"], session["4"]]))
         # Set a cookie to mark the user as voted
         response.set_cookie(f'voted{activeID}', 'true')
@@ -107,4 +131,3 @@ def vote():
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=80)
-

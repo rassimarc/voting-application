@@ -1,17 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Results</title>
+  <title>Results</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url(http://fonts.googleapis.com/earlyaccess/droidarabickufi.css); 
+
+    .container {
+      font-family: 'Droid Arabic Kufi', sans-serif;
+      width: 50%;
+      margin: 0 auto;
+      text-align: center;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+    .chart-label {
+      font-family: 'Droid Arabic Kufi', sans-serif;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-<form method="post">
-  <h1>{{ question }}</h1>
-  <ul>
-    <li>{{ options[0] }}: {{ votes[0] }}</li>
-    <li>{{ options[1] }}: {{ votes[1] }}</li>
-    <li>{{ options[2] }}: {{ votes[2] }}</li>
-    <li>{{ options[3] }}: {{ votes[3] }}</li>
-  </ul>
-</form>
+
+  <div class="container">
+    <h2>{{ question }}</h2>
+    <div>
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+  <script>
+  var ctx = document.getElementById("myChart").getContext('2d');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ["{{ options[0] }}", "{{ options[1] }}", "{{ options[2] }}", "{{ options[3] }}"],
+        datasets: [{
+        label: '',
+        data: [parseInt("{{votes[0]}}"), parseInt("{{votes[1]}}"), parseInt("{{votes[2]}}"), parseInt("{{votes[3]}}")],
+        backgroundColor: "#4CAF50"
+      }]
+    },
+    options: {
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          },
+          x: {
+            ticks: {
+              font: {
+                family: 'Droid Arabic Kufi, sans-serif',
+                size: 14
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
 </body>
 </html>
