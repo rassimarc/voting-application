@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, Response, make_response
 import datetime
 import pandas as pd
+import time
 
 app = Flask(__name__)
 session = {}
@@ -13,69 +14,67 @@ session['3'] = 0
 session['4'] = 0
 session["isOpen"] = True
 i = 1
-data = pd.read_csv("questions.csv", encoding="utf-8")
-print(data)
-num_rows = data.shape[0]
-num_columns = data.shape[1]
-time = datetime.datetime(2020, 1, 1, 1, 1, 1, 1)
+_time = 0
 
-# Access the data in each row and column
-for i in range(num_rows):
-    Questions[i+1] = data.iloc[i, 0]
-    Answers[i+1] = data.iloc[i, 1:len(data.iloc[i, :])]
-"""
-try:
-    while True:
-        namehandle = open(f"test-question{i}.txt", mode='r', encoding="utf-8")
-        L = namehandle.readlines()
-        Questions[i] = L[0]
-        Answers[i] = L[1:len(L)]
-        i += 1
-except:
-    pass
-    """
+def csv_open():
+    Q={}
+    A={}
+    try:
+        data = pd.read_csv("questions.csv", encoding="utf-8")
+        num_rows = data.shape[0]
+        # Access the data in each row and column
+        for i in range(num_rows):
+            Q[i+1] = data.iloc[i, 0]
+            A[i+1] = data.iloc[i, 1:len(data.iloc[i, :])].to_list()
+    except Exception as exp:
+        print("Failed to read the question file", exp)
+
+    return Q, A
+
+Questions, Answers = csv_open()
+
 @app.route('/')
 def index():
     session["isOpen"] = True
-    global time
-    time = datetime.datetime.now()
+    global _time
+    _time = time.time()
     return "Hello"
 
 @app.route('/question')
 def questions():
     activeID = session["activeQuestion"]
-    activeQuestion = Questions[activeID]
-    activeAnswers = Answers[activeID]
+    activeQuestion = Questions.get(activeID, "")
+    activeAnswers = Answers.get(activeID, [])
+    if not activeAnswers or not activeQuestion :
+        return "There are no questions"
     isOpen = session["isOpen"]
     if f'voted{activeID}' in request.cookies:
         return render_template("voted.html", Question = activeQuestion, x = activeAnswers)
     if isOpen: 
-        return render_template("question.html", Question = activeQuestion, x = activeAnswers)
+        return render_template("question.html", Question = activeQuestion, x = activeAnswers, timer = _time-time.time())
     else: return "Stay Tuned!"
 
 @app.route('/vote', methods = ["POST"])
 def vote():
-    otherTime = datetime.datetime.now()
-    activeID = session["activeQuestion"]
-    activeQuestion = Questions[activeID]
-    activeAnswers = Answers[activeID]
-    timeDifference = otherTime - time
     isOpen = session["isOpen"]
-
-    if timeDifference.seconds > 10:
-        session["isOpen"] = False
-        return Response("Voting is closed", status=400)
-
     if not isOpen:
         return Response("Voting is closed", status=400)
-
+    
+    timeDifference = time.time() - _time
+    if timeDifference > 60:
+        session["isOpen"] = False
+        return Response("Voting is closed", status=400)
+    
     option = request.form.get('answer')
-
-    if not option:
+    if option not in ['1', '2', '3', '4']:
         return Response("Invalid option", status=400)
 
-    if f'voted{activeID}' in request.cookies:
+    activeID = session["activeQuestion"]
+    if request.cookies.get(f'voted{activeID}'):
         return Response("You have already voted", status=400)
+    
+    activeQuestion = Questions[activeID]
+    activeAnswers = Answers[activeID]
 
     try:
         session[option] += 1
@@ -87,5 +86,5 @@ def vote():
         return Response("Bad request", 400)
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=80)
 
