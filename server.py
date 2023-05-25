@@ -16,7 +16,7 @@ session['1'] = 0
 session['2'] = 0
 session['3'] = 0
 session['4'] = 0
-session["isOpen"] = True
+session["isOpen"] = False
 i = 1
 _time = 0
 
@@ -54,7 +54,6 @@ conn.close()
 @app.route('/')
 def index():
     global _time
-    _time = time.time()
     return render_template("index.html")
 
 @app.route("/admin", methods = ['GET', 'POST'])
@@ -85,7 +84,7 @@ def questions():
         return "There are no questions"
     isOpen = session["isOpen"]
     if not isOpen:
-        return "Stay Tuned!"
+        return render_template("staytuned.html")
     if f'voted{activeID}' in request.cookies:
         return render_template("voted.html", Question = activeQuestion, x = activeAnswers) 
     return render_template("question.html", Question = activeQuestion, x = activeAnswers, timer = _time-time.time(), times = "loader 25s ease forwards")   
@@ -109,6 +108,7 @@ def vote():
     if request.cookies.get(f'voted{activeID}'):
         return Response("You have already voted", status=400)
     
+    
     activeQuestion = Questions[activeID]
     activeAnswers = Answers[activeID]
 
@@ -122,12 +122,28 @@ def vote():
             conn.close()
         except Exception as exp:
             print("Could not increment vote:", exp)
-        response = make_response(render_template("thanks.html",  question = activeQuestion, options = activeAnswers, votes = [session["1"], session["2"], session["3"], session["4"]]))
+        # response = make_response(render_template("thanks.html",  question = activeQuestion, options = activeAnswers, votes = [session["1"], session["2"], session["3"], session["4"]]))
+        response = make_response(Response("Thanks for voting", status=200))
         # Set a cookie to mark the user as voted
         response.set_cookie(f'voted{activeID}', 'true')
         return response 
     except:
-        return Response("Bad request", 400)
+        return Response("The vote could not be processed", 400)
+
+@app.route('/results')
+def results():
+    activeID = session["activeQuestion"]
+    activeQuestion = Questions[activeID]
+    activeAnswers = Answers[activeID]
+    try:
+        conn = sqlite3.connect('voting-v0.1.db')
+        cursor = conn.cursor()
+        cursor.execute(f"SELECT op_votes FROM Option WHERE q_id = {activeID}")
+        votes = cursor.fetchall()
+        conn.close()
+    except Exception as exp:
+        print("Could not get votes:", exp)
+    return render_template("thanks.html", question = activeQuestion, options = activeAnswers, votes = [session["1"], session["2"], session["3"], session["4"]])
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=80)

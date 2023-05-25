@@ -3,14 +3,17 @@
 
 <head>
   <title>Question</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     @import url(http://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+    @import url(https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css);
     /* @import "C:\Users\Marc\Desktop\voting-application\droid_arabic_kufi.css";*/
 
     body {
       font-family: 'Droid Arabic Kufi', sans-serif;
       text-align: center;
     }
+    
 
     h1 {
       font-size: 24px;
@@ -115,18 +118,65 @@
       padding: 5px;
       width: 0;
     }
+
+
+    .thankyou-wrapper{
+        width:100%;
+        height:auto;
+        margin:auto;
+        background:#ffffff; 
+        padding:10px 0px 50px;
+      }
+      .thankyou-wrapper h1{
+        font:100px Arial, Helvetica, sans-serif;
+        text-align:center;
+        color:#333333;
+        padding:0px 10px 10px;
+      }
+      .thankyou-wrapper p{
+        font:26px Arial, Helvetica, sans-serif;
+        text-align:center;
+        color:#333333;
+        padding:5px 10px 10px;
+      }
+      .thankyou-wrapper a{
+        font:26px Arial, Helvetica, sans-serif;
+        text-align:center;
+        color:#ffffff;
+        display:block;
+        text-decoration:none;
+        width:250px;
+        background:#E47425;
+        margin:10px auto 0px;
+        padding:15px 20px 15px;
+        border-bottom:5px solid #F96700;
+      }
+      .thankyou-wrapper a:hover{
+        font:26px Arial, Helvetica, sans-serif;
+        text-align:center;
+        color:#ffffff;
+        display:block;
+        text-decoration:none;
+        width:250px;
+        background:#F96700;
+        margin:10px auto 0px;
+        padding:15px 20px 15px;
+        border-bottom:5px solid #F96700;
+      }
+
   </style>
 </head>
 
 <body>
+<div id="question" style="display: block">
   <div class="progress-bar">
     <span class="bar">
       <span class="progress" id="timerBar"></span>
     </span>
   </div>
   <p id="demo"></p>
-  <form action="/vote" method="POST">
-    <h1>{{ Question }}{{times}}</h1>
+  <form method="POST">
+    <h1>{{ Question }}</h1>
     <ul>
       <li>
         <input type="radio" id="option1" name="answer" value="1">
@@ -148,7 +198,76 @@
     <br>
     <input type="submit" id="myBtn" value="Submit">
   </form>
+</div>
 
+
+<div id="thanks" style="display: none">
+  <section class="login-main-wrapper">
+    <div class="main-container">
+        <div class="login-process">
+            <div class="login-main-container">
+                <div class="thankyou-wrapper">
+                    <h1><img src="http://montco.happeningmag.com/wp-content/uploads/2014/11/thankyou.png" alt="thanks" /></h1>
+                    <p>for voting, the results will be out soon... </p>
+                    <a href="/results">Results</a>
+                      <div class="clr"></div>
+                  </div>
+                  <div class="clr"></div>
+              </div>
+          </div>
+          <div class="clr"></div>
+      </div>
+  </section>
+</div>
+
+  <script src="{{url_for('static', filename='jquery-3.7.0.min.js')}}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $("input[type='radio']").click(function () {
+        var radioValue = $("input[name='answer']:checked").val();
+        if (radioValue) {
+          $("#myBtn").prop("disabled", false);
+        }
+      });
+      $("#myBtn").click(function (e) {
+        e.preventDefault();
+        var radioValue = $("input[name='answer']:checked").val();
+        if (radioValue) {
+          // $("#myBtn").prop("disabled", true);
+          $.post("/vote", {
+            answer: radioValue
+          }).done(function(response, status, xhr) {
+            var statusCode = xhr.status;
+            if (statusCode == 200){
+              document.getElementById("question").style.display = "none";
+              document.getElementById("thanks").style.display = "block";
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: response,
+                showConfirmButton: false,
+                timer: 1500
+              })
+            }
+          }).fail(function(xhr, status, error) {
+            var statusCode = xhr.status;
+            // This function is executed when the request encounters an error
+            if (statusCode == 400){
+              Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: xhr.responseText,
+                showConfirmButton: false,
+                timer: 1500
+              })
+            }
+          });
+        }
+      })
+    });
+    </script>
 
   <script>
     // Set the date we're counting down to

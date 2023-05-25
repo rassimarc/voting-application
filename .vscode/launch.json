@@ -16,7 +16,9 @@
             "args": [
                 "run",
                 "--no-debugger",
-                "--no-reload"
+                "--no-reload",
+                "--port",
+                "80"
             ],
             "jinja": true,
             "justMyCode": true

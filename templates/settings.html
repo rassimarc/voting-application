@@ -1,9 +1,61 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Settings</title>
-    </head>
-    <body>
+<head>
+    <title>Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        select {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        input[type="submit"]:last-child {
+            margin-right: 0;
+        }
+
+        #hide {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
         <h2>Choose Question</h2>
         <form method="POST" action="/admin">
             <select name="selected">
@@ -11,10 +63,11 @@
                 <option value="{{ number }}">{{ Questions[number] }}</option>
                 {% endfor %}
             </select>
-            <br>
-            <h2>Show Question?</h2>
-            <input type="submit" name = "mode" value="Show">
-            <input type="submit" name = "mode" value="Hide">
+            <div class="button-container">
+                <input type="submit" name="mode" id="show" value="Show">
+                <input type="submit" name="mode" id="hide" value="Hide">
+            </div>
         </form>
-    </body>
+    </div>
+</body>
 </html>
