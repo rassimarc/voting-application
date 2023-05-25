@@ -47,9 +47,7 @@ def csv_open():
 
     return Q, A
 
-Questions, Answers = csv_open()
-conn.commit()
-conn.close()
+
 
 @app.route('/')
 def index():
@@ -146,4 +144,7 @@ def results():
     return render_template("thanks.html", question = activeQuestion, options = activeAnswers, votes = [session["1"], session["2"], session["3"], session["4"]])
 
 if __name__ == '__main__':
+    Questions, Answers = csv_open()
+    conn.commit()
+    conn.close()
     app.run(debug=True, host="0.0.0.0", port=80)
