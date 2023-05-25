@@ -54,6 +54,8 @@ conn.commit()
 
 cur.execute("SELECT q_id, q_body FROM Question")
 Questionss = cur.fetchall()
+cur.execute("SELECT q_id, op_id, op_content FROM Option")
+Answerss = cur.fetchall()
 conn.close()
 
 @app.route('/')
@@ -64,6 +66,8 @@ def index():
 @app.route("/admin", methods = ['GET', 'POST'])
 def question_options():
     if request.method == "GET":
+        for i in Questionss:
+            Questions[i[0]] = i[1]
         return render_template("settings.html", Questionss = Questionss)
     else:
         availability = request.form.get("mode")
@@ -84,6 +88,10 @@ def question_options():
 def questions():
     activeID = session["activeQuestion"]
     activeQuestion = Questions.get(activeID, "")
+    activeAnswers = Answers.get(activeID, [])
+    for i in Answerss:
+        Answers[i[0]] = Answers.get(i[0], []) + [i[2]]
+
     activeAnswers = Answers.get(activeID, [])
     if not activeAnswers or not activeQuestion :
         return "There are no questions"
