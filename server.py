@@ -3,9 +3,10 @@ import datetime
 import pandas as pd
 import time
 import sqlite3
+import os 
 
 app = Flask(__name__)
-conn = sqlite3.connect('voting-v0.1.db')
+conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), 'voting-v0.1.db'))
 cur = conn.cursor()
 
 session = {}
