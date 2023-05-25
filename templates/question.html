@@ -1,88 +1,132 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<title>Question</title>
-<style>
-  @import url(http://fonts.googleapis.com/earlyaccess/droidarabickufi.css); 
- /* @import "C:\Users\Marc\Desktop\voting-application\droid_arabic_kufi.css";*/
+  <title>Question</title>
+  <style>
+    @import url(http://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+    /* @import "C:\Users\Marc\Desktop\voting-application\droid_arabic_kufi.css";*/
 
-  body {
-    font-family: 'Droid Arabic Kufi', sans-serif;
-    text-align: center;
-  }
+    body {
+      font-family: 'Droid Arabic Kufi', sans-serif;
+      text-align: center;
+    }
 
-  h1 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 20px;
-  }
+    h1 {
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
 
-  ul {
-    list-style-type: none;
-    padding: 0;
-    display: inline-block;
-    text-align: left;
-  }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      display: inline-block;
+      text-align: left;
+    }
 
-  li {
-    margin-bottom: 10px;
-  }
+    li {
+      margin-bottom: 10px;
+    }
 
-  input[type="radio"] {
-    display: none;
-  }
+    input[type="radio"] {
+      display: none;
+    }
 
-  .radio-label {
-    display: inline-block;
-    padding: 10px 20px;
-    width: 200px;
-    background-color: #fff;
-    color: #333;
-    border: 2px solid #333;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-  }
+    .radio-label {
+      display: inline-block;
+      padding: 10px 20px;
+      width: 200px;
+      background-color: #fff;
+      color: #333;
+      border: 2px solid #333;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
 
-  .radio-label:hover {
-    background-color: #eee;
-  }
+    .radio-label:hover {
+      background-color: #eee;
+    }
 
-  input[type="radio"]:checked + .radio-label {
-    background-color: #4CAF50;
-    color: #fff;
-    border-color: #4CAF50;
-  }
+    input[type="radio"]:checked+.radio-label {
+      background-color: #4CAF50;
+      color: #fff;
+      border-color: #4CAF50;
+    }
 
-  #myBtn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
+    #myBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
-  #myBtn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
+    #myBtn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
 
-  #demo {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
+    #demo {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
 
-  .expired {
-    color: red;
-  }
-</style>
+    .expired {
+      color: red;
+    }
+
+
+
+
+    @keyframes loader {
+      0% {
+        width: 0;
+      }
+
+      100% {
+        width: 100%;
+      }
+
+    }
+
+    .progress-bar {
+      border-radius: 60px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .progress-bar span {
+      display: block;
+    }
+
+
+    .bar {
+      background: rgba(0, 0, 0, 0.075);
+    }
+
+    .progress {
+      /* animation: loader 60s ease forwards; */
+      background: #4CAF50;
+      color: #fff;
+      padding: 5px;
+      width: 0;
+    }
+  </style>
 </head>
+
 <body>
+  <div class="progress-bar">
+    <span class="bar">
+      <span class="progress" id="timerBar"></span>
+    </span>
+  </div>
   <p id="demo"></p>
   <form action="/vote" method="POST">
-    <h1>{{ Question }}</h1>
+    <h1>{{ Question }}{{times}}</h1>
     <ul>
       <li>
         <input type="radio" id="option1" name="answer" value="1">
@@ -109,14 +153,16 @@
   <script>
     // Set the date we're counting down to
     document.getElementById("myBtn").disabled = true;
+    var barWidth = document.getElementById("timerBar");
     var timer = "{{ timer }}";
 
     var time_int = parseInt(timer) + 60;
     // Update the count down every 1 second
-    var x = setInterval(function() {
+    barWidth.style.width = (100 / 60) * (60 - time_int)+ "%";
+    var x = setInterval(function () {
       document.getElementById("myBtn").disabled = false;
-
       time_int--;
+      // barWidth.style.width = (100 / 60) * (60 - time_int) + "%";
       // Output the result in an element with id="demo"
       document.getElementById("demo").innerHTML = time_int + "s ";
 
@@ -128,6 +174,14 @@
         document.getElementById("demo").classList.add("expired");
       }
     }, 1000);
+    
+    smoothTime = time_int * 10;
+    setInterval(() => {
+      barWidth.style.width  = (100 / 600) * (600 - smoothTime) + "%";
+      smoothTime--;
+    }, 100);
+
   </script>
 </body>
+
 </html>

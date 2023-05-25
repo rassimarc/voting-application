@@ -88,7 +88,7 @@ def questions():
         return "Stay Tuned!"
     if f'voted{activeID}' in request.cookies:
         return render_template("voted.html", Question = activeQuestion, x = activeAnswers) 
-    return render_template("question.html", Question = activeQuestion, x = activeAnswers, timer = _time-time.time())
+    return render_template("question.html", Question = activeQuestion, x = activeAnswers, timer = _time-time.time(), times = "loader 25s ease forwards")   
 
 @app.route('/vote', methods = ["POST"])
 def vote():
