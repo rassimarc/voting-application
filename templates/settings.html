@@ -59,8 +59,8 @@
         <h2>Choose Question</h2>
         <form method="POST" action="/admin">
             <select name="selected">
-                {% for number in QuestionNumber %}
-                <option value="{{ number }}">{{ Questions[number] }}</option>
+                {% for number in Questionss %}
+                <option value="{{ number[0] }}">{{ number[1] }}</option>
                 {% endfor %}
             </select>
             <div class="button-container">

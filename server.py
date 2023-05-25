@@ -10,6 +10,7 @@ cur = conn.cursor()
 
 session = {}
 Questions = {}
+Questionss = []
 Answers = {}
 session["activeQuestion"] = 5
 session['1'] = 0
@@ -47,7 +48,12 @@ def csv_open():
 
     return Q, A
 
+Questions, Answers = csv_open()
+conn.commit()
 
+cur.execute("SELECT q_id, q_body FROM Question")
+Questionss = cur.fetchall()
+conn.close()
 
 @app.route('/')
 def index():
@@ -56,11 +62,8 @@ def index():
 
 @app.route("/admin", methods = ['GET', 'POST'])
 def question_options():
-    Questions, Answers = csv_open()
-    conn.commit()
-    conn.close()
     if request.method == "GET":
-        return render_template("settings.html", QuestionNumber = list(Questions.keys()), Questions = Questions)
+        return render_template("settings.html", Questionss = Questionss)
     else:
         availability = request.form.get("mode")
         selected = request.form.get("selected")
@@ -72,7 +75,7 @@ def question_options():
             session["isOpen"] = True
         elif availability == "Hide":
             session["isOpen"] = False
-        return render_template("settings.html", QuestionNumber = list(Questions.keys()), Questions = Questions)
+        return render_template("settings.html", Questionss = Questionss)
 
 
 
