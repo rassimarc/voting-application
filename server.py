@@ -56,6 +56,9 @@ def index():
 
 @app.route("/admin", methods = ['GET', 'POST'])
 def question_options():
+    Questions, Answers = csv_open()
+    conn.commit()
+    conn.close()
     if request.method == "GET":
         return render_template("settings.html", QuestionNumber = list(Questions.keys()), Questions = Questions)
     else:
@@ -144,7 +147,4 @@ def results():
     return render_template("thanks.html", question = activeQuestion, options = activeAnswers, votes = [session["1"], session["2"], session["3"], session["4"]])
 
 if __name__ == '__main__':
-    Questions, Answers = csv_open()
-    conn.commit()
-    conn.close()
     app.run(debug=True, host="0.0.0.0", port=80)
